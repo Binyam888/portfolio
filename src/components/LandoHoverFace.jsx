@@ -31,12 +31,16 @@ const LandoHoverFace = ({ faceSrc, helmetSrc }) => {
   const y3 = useTransform(scrollYProgress, [0, 1], [0, -150]); 
   
   // Scale effect for the image to grow bigger when scrolling
-  const scaleFace = useTransform(scrollYProgress, [0, 0.8], [1, 2.5]);
+  const scaleFaceRaw = useTransform(scrollYProgress, [0, 0.8], [1, 2.5]);
 
-  // Smooth out the parallax slightly with a spring
-  const smoothY1 = useSpring(y1, { damping: 25, stiffness: 100 });
-  const smoothY2 = useSpring(y2, { damping: 25, stiffness: 100 });
-  const smoothY3 = useSpring(y3, { damping: 25, stiffness: 100 });
+  // Butter smooth configuration optimized for mobile
+  const springConfig = { damping: 25, stiffness: 100, mass: 0.5, restDelta: 0.0001 };
+
+  // Smooth out all parallax properties 
+  const smoothY1 = useSpring(y1, springConfig);
+  const smoothY2 = useSpring(y2, springConfig);
+  const smoothY3 = useSpring(y3, springConfig);
+  const scaleFace = useSpring(scaleFaceRaw, springConfig);
 
 
   // === B. 3D Tilt Setup (Original, Unchanged) ===
@@ -82,10 +86,10 @@ const LandoHoverFace = ({ faceSrc, helmetSrc }) => {
     <section 
       ref={containerRef} 
       id="hero"
-      className="relative h-[250vh] bg-black w-full"
+      className="relative h-[250svh] bg-black w-full"
     >
       {/* Sticky wrapper pinning content to the viewport while parallax completes */}
-      <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+      <div className="sticky top-0 h-[100svh] w-full flex items-center justify-center overflow-hidden">
       
       {/* 1. Background Text (y1: Subtle Parallax) */}
       <motion.h1 
