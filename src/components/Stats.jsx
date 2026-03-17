@@ -230,9 +230,9 @@ export default function Stats() {
             <h3 className="text-neon-green font-bold tracking-widest uppercase mb-4 text-sm">
               // Performance Data
             </h3>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-tight text-white">
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-tight text-white uppercase">
               Driven by data.<br/>
-              <span className="text-white/50">Designed for impact.</span>
+              <span className="text-white/50 uppercase">Designed for impact.</span>
             </h2>
           </div>
           

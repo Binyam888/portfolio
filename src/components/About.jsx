@@ -168,7 +168,7 @@ export default function About() {
               I am a passionate <strong className="text-white font-medium">Creative Developer</strong> focused on crafting immersive, high-performance web experiences. Merging deep technical expertise with a sharp eye for design aesthetics.
             </p>
             <p className="text-sm md:text-base text-white/50 leading-relaxed mb-8">
-              (Note: Automated scraping of your LinkedIn was blocked by their privacy walls. Please replace these placeholder experiences with your actual details or paste them in the chat for me to update!)
+              Armed with a Bachelor of Technology in Computer Science from Visvesvaraya Technological University, my foray into the technological realm is marked by a keen expertise in User Interface Design and REST APIs. The toolkit I've honed is a product of both comprehensive academic grounding and a self-directed deep dive into the intricacies of the MERN stack.
             </p>
             
             <div ref={timelineRef} className="space-y-10 md:space-y-16 border-l w-full border-white/10 pl-8 md:pl-10 relative ml-2 md:ml-4 py-4 md:py-8 pb-12 md:pb-24 h-full">

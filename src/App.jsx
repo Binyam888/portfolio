@@ -8,6 +8,8 @@ import Navbar from "./components/Navbar";
 import LandoHoverFace from "./components/LandoHoverFace";
 import About from "./components/About";
 
+import PortfolioScene from "./components/PortfolioScene";
+
 function App() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
@@ -44,10 +46,12 @@ function App() {
           helmetSrc="/bm-bg-l.webp"
         />
         <About />
+        <PortfolioScene />
         <Stats />
         <Work />
+        
       </main>
-      
+       
   
       <Footer />
     </div>
