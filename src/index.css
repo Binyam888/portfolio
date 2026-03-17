@@ -15,9 +15,8 @@
   }
 }
 
-html {
-  scroll-behavior: smooth;
-}
+/* scroll-behavior: smooth removed — Lenis handles smooth scrolling; native smooth conflicts with it */
+
 
 body {
   background-color: var(--color-deep-charcoal);

@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Sphere, Html, Box, Torus, Octahedron, Dodecahedron, MeshDistortMaterial, Stars } from "@react-three/drei";
 import * as THREE from "three";
@@ -9,6 +9,9 @@ const statItems = [
   { label: "Global Clients", value: "45", suffix: "", color: "#ff00ff", distance: 7.5, speed: 0.15, size: 0.4, shape: "torus" },
   { label: "Awards Won", value: "08", suffix: "", color: "#ffaa00", distance: 9.5, speed: 0.1, size: 0.4, shape: "octahedron" },
 ];
+
+// Shared Vector3 to avoid `new THREE.Vector3()` allocation every frame (GC pressure)
+const _scaleVec = new THREE.Vector3();
 
 function OrbitRing({ radius }) {
   const lineGeometry = useMemo(() => {
@@ -31,30 +34,26 @@ function Planet({ item }) {
   const groupRef = useRef();
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
-  
-  // Random starting angle for the orbit
   const angleRef = useRef(Math.random() * Math.PI * 2);
 
   useFrame((state, delta) => {
-    // Stop orbiting when hovered
     if (!hovered) {
       angleRef.current += delta * item.speed;
     }
     
-    // Orbital rotation positioning
     const x = Math.cos(angleRef.current) * item.distance;
     const z = Math.sin(angleRef.current) * item.distance;
     groupRef.current.position.set(x, 0, z);
     
-    // Planet's own axis rotation
     if (meshRef.current) {
       meshRef.current.rotation.y += delta;
       meshRef.current.rotation.x += delta * 0.5;
     }
 
-    // Smooth scaling on hover
+    // Use the shared _scaleVec instead of allocating a new Vector3 each frame
     const targetScale = hovered ? 1.5 : 1;
-    groupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 5);
+    _scaleVec.set(targetScale, targetScale, targetScale);
+    groupRef.current.scale.lerp(_scaleVec, delta * 5);
   });
 
   const materialProps = {
@@ -92,7 +91,6 @@ function Planet({ item }) {
           {renderShape()}
         </group>
 
-        {/* Info Label attached to the planet */}
         <Html distanceFactor={15} center position={[0, item.size + 1.5, 0]}>
           <div 
             className="pointer-events-none transition-all duration-300"
@@ -129,27 +127,20 @@ function ITParkGlobe() {
     globeRef.current.rotation.x -= delta * 0.05;
   });
 
-  // Procedurally generate "buildings" standing directly upwards from the surface of the globe
   const buildings = useMemo(() => {
     const b = [];
     for (let i = 0; i < 60; i++) {
-        const theta = Math.random() * Math.PI * 2; // Longitude
-        const phi = Math.acos((Math.random() * 2) - 1); // Latitude
-        
-        const r = 1.45; // Start just inside the sphere
-        
-        // Convert spherical coords to cartesian based on center of globe
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos((Math.random() * 2) - 1);
+        const r = 1.45;
         const x = r * Math.sin(phi) * Math.cos(theta);
         const y = r * Math.sin(phi) * Math.sin(theta);
         const z = r * Math.cos(phi);
         const p = new THREE.Vector3(x, y, z);
-        
-        // Calculate the quaternion so the top of the box points away from the center (origin)
         const q = new THREE.Quaternion().setFromUnitVectors(
-             new THREE.Vector3(0, 1, 0), // Default Box Y-axis
+             new THREE.Vector3(0, 1, 0),
              p.clone().normalize()
         );
-        
         b.push({
            position: p,
            quaternion: q,
@@ -163,17 +154,12 @@ function ITParkGlobe() {
 
   return (
     <group ref={globeRef}>
-      {/* Base "Cyber" Earth */}
       <Sphere args={[1.5, 64, 64]}>
         <MeshDistortMaterial color="#0a0a0a" attach="material" distort={0.2} speed={1.5} roughness={0.9} />
       </Sphere>
-      
-      {/* Wireframe overlay to look technological */}
       <Sphere args={[1.51, 16, 16]}>
         <meshBasicMaterial color="#39FF14" wireframe transparent opacity={0.15} />
       </Sphere>
-
-      {/* Buildings sticking out of the planet surface */}
       {buildings.map((b, i) => (
         <Box key={i} args={[0.08, b.height, 0.08]} position={b.position} quaternion={b.quaternion}>
           <meshStandardMaterial 
@@ -184,8 +170,6 @@ function ITParkGlobe() {
           />
         </Box>
       ))}
-
-      {/* Core neon light emanating from the IT Park */}
       <pointLight color="#39FF14" intensity={30} distance={50} />
       <pointLight color="#ffffff" intensity={10} distance={100} />
     </group>
@@ -196,14 +180,14 @@ function GalaxyBackground() {
   const ref = useRef();
   
   useFrame((state, delta) => {
-    // Add a very subtle continuous rotation to the starfield
     ref.current.rotation.y -= delta * 0.02;
     ref.current.rotation.x -= delta * 0.01;
   });
 
   return (
     <group ref={ref}>
-      <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+      {/* Reduced from 5000 → 2000 stars: halves particle geometry with negligible visual difference */}
+      <Stars radius={100} depth={50} count={2000} factor={4} saturation={0} fade speed={1} />
     </group>
   );
 }
@@ -213,7 +197,6 @@ function SolarSystem() {
     <group>
       <GalaxyBackground />
       <ITParkGlobe />
-      
       {statItems.map((stat, i) => (
         <Planet key={i} item={stat} />
       ))}
@@ -222,8 +205,23 @@ function SolarSystem() {
 }
 
 export default function Stats() {
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef(null);
+
+  // Toggle visibility (not mounting) so useFrame animations keep running
+  // and WebGL context is preserved — avoids expensive remounting
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { rootMargin: '200px 0px' }
+    );
+    const el = sectionRef.current;
+    if (el) observer.observe(el);
+    return () => { if (el) observer.unobserve(el); };
+  }, []);
+
   return (
-    <section id="stats" className="py-32 bg-dark-gray relative z-10 border-t border-white/5 overflow-hidden">
+    <section id="stats" ref={sectionRef} className="py-32 bg-dark-gray relative z-10 border-t border-white/5 overflow-hidden">
       <div className="container mx-auto px-6 md:px-12 relative z-20">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
           <div className="max-w-xl">
@@ -244,15 +242,16 @@ export default function Stats() {
 
       {/* 3D Canvas Area */}
       <div className="w-full h-[600px] mt-[-20px] cursor-grab active:cursor-grabbing relative">
-        {/* Subtle background glow */}
         <div className="absolute inset-0 bg-neon-green/5 blur-[120px] rounded-full scale-150 pointer-events-none" />
         
-        <Canvas camera={{ position: [0, 8, 16], fov: 45 }}>
+        <Canvas
+          camera={{ position: [0, 8, 16], fov: 45 }}
+          style={{ visibility: isVisible ? 'visible' : 'hidden' }}
+        >
           <ambientLight intensity={0.2} />
           
           <SolarSystem />
 
-          {/* Allows user to drag/rotate the entire solar system */}
           <OrbitControls 
             enablePan={false}
             enableZoom={false}

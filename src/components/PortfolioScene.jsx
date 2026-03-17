@@ -1,75 +1,205 @@
-import React, { useState, Suspense, useEffect } from 'react';
+import React, { useState, Suspense, useEffect, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF, Environment, Html, Float, Text, ContactShadows, RoundedBox, Edges } from '@react-three/drei';
+import { useGLTF, Environment, Html, Float, Text, ContactShadows, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
 
-
-
 const SKILLS = [
-  // Shifted all skills DOWN on the Y axis by ~0.6 to prevent them from clipping the top gradient
-  { name: "React", position: [-3.2, 1.9, -2.5] },
-  { name: "Next.js", position: [-2.0, 2.6, -3.0] },
-  { name: "WordPress", position: [-0.8, 3.2, -3.5] },
-  { name: "PHP", position: [0.8, 3.2, -3.5] },
-  { name: "Strapi", position: [2.0, 2.6, -3.0] },
-  { name: "JS", position: [3.2, 1.9, -2.5] },
-  { name: "Sass", position: [3.8, 0.6, -2.0] },
-
-  // Lower tier arc
-  { name: "MongoDB", position: [-3.8, 0.6, -2.0] },
-  { name: "Express", position: [-3.0, -0.8, -1.0] },
-  { name: "Node.js", position: [-1.8, -1.6, -0.5] },
-
-  { name: "GitHub", position: [1.8, -1.6, -0.5] },
-  { name: "Postman", position: [3.0, -0.8, -1.0] },
-  { name: "AI", position: [4.2, -0.6, -1.5] },
+  {
+    name: "React",
+    icon: "⚛",
+    color: "#61DAFB",
+    description: "Component-based UI for interactive web apps",
+    position: [-3.2, 1.9, -2.5],
+  },
+  {
+    name: "Next.js",
+    icon: "▲",
+    color: "#ffffff",
+    description: "Full-stack React framework with SSR & routing",
+    position: [-2.0, 2.6, -3.0],
+  },
+  {
+    name: "WordPress",
+    icon: "W",
+    color: "#21759B",
+    description: "Custom themes, plugins & headless CMS builds",
+    position: [-0.8, 3.2, -3.5],
+  },
+  {
+    name: "PHP",
+    icon: "🐘",
+    color: "#777BB4",
+    description: "Server-side scripting & REST API development",
+    position: [0.8, 3.2, -3.5],
+  },
+  {
+    name: "Strapi",
+    icon: "◎",
+    color: "#4945FF",
+    description: "Headless CMS for flexible content APIs",
+    position: [2.0, 2.6, -3.0],
+  },
+  {
+    name: "JS",
+    icon: "JS",
+    color: "#F7DF1E",
+    description: "Modern ES2024+ — async, modules, performance",
+    position: [3.2, 1.9, -2.5],
+  },
+  {
+    name: "Sass",
+    icon: "✦",
+    color: "#CF649A",
+    description: "Advanced CSS with variables & mixins",
+    position: [3.8, 0.6, -2.0],
+  },
+  {
+    name: "MongoDB",
+    icon: "🍃",
+    color: "#4DB33D",
+    description: "NoSQL document database for scalable apps",
+    position: [-3.8, 0.6, -2.0],
+  },
+  {
+    name: "Express",
+    icon: "⚡",
+    color: "#aaaaaa",
+    description: "Minimal Node.js framework for REST services",
+    position: [-3.0, -0.8, -1.0],
+  },
+  {
+    name: "Node.js",
+    icon: "⬡",
+    color: "#68A063",
+    description: "Server-side JS runtime for high-performance APIs",
+    position: [-1.8, -1.6, -0.5],
+  },
+  {
+    name: "GitHub",
+    icon: "◉",
+    color: "#ffffff",
+    description: "Version control, CI/CD & collaboration",
+    position: [1.8, -1.6, -0.5],
+  },
+  {
+    name: "Postman",
+    icon: "✉",
+    color: "#FF6C37",
+    description: "API testing, automation & documentation",
+    position: [3.0, -0.8, -1.0],
+  },
+  {
+    name: "AI",
+    icon: "✦",
+    color: "#39FF14",
+    description: "LLM integration, prompt engineering & AI tooling",
+    position: [4.2, -0.6, -1.5],
+  },
 ];
 
-
-
-function SkillNode({ name, position }) {
+function SkillNode({ skill }) {
   const [hovered, setHovered] = useState(false);
+  const { name, icon, color, description, position } = skill;
 
   return (
-    <Float speed={hovered ? 0.5 : 2} rotationIntensity={hovered ? 0.05 : 0.4} floatIntensity={hovered ? 0.1 : 0.8} position={position}>
+    <Float
+      speed={hovered ? 0.3 : 1.8}
+      rotationIntensity={hovered ? 0 : 0.15}
+      floatIntensity={hovered ? 0.05 : 0.6}
+      position={position}
+    >
       <group
         onPointerOver={(e) => {
           e.stopPropagation();
           setHovered(true);
           document.body.style.cursor = 'pointer';
         }}
-        onPointerOut={(e) => {
+        onPointerOut={() => {
           setHovered(false);
           document.body.style.cursor = 'auto';
         }}
       >
-        {/* SHRUNK THE BOX: Changed args from [1.1, 0.4, 0.1] to [0.8, 0.25, 0.05] */}
-        <RoundedBox
-          args={[0.8, 0.25, 0.05]}
-          radius={0.05}
-          smoothness={4}
-          position={[0, 0, -0.05]}
-        >
+        {/* Main pill */}
+        <RoundedBox args={[1.1, 0.35, 0.08]} radius={0.08} smoothness={4}>
           <meshStandardMaterial
-            color={hovered ? "#22cc11" : "#1a1a1a"}
-            metalness={0.7}
-            roughness={0.15}
-            emissive={hovered ? "#116600" : "#000000"}
-            emissiveIntensity={hovered ? 0.4 : 0}
+            color={hovered ? color : "#111111"}
+            metalness={0.6}
+            roughness={0.2}
+            emissive={hovered ? color : color}
+            emissiveIntensity={hovered ? 0.35 : 0.04}
           />
         </RoundedBox>
 
-        {/* SHRUNK THE TEXT: Changed fontSize to 0.10 */}
+        {/* Colored left accent bar */}
+        <mesh position={[-0.46, 0, 0.046]}>
+          <boxGeometry args={[0.04, 0.22, 0.01]} />
+          <meshStandardMaterial color={color} emissive={color} emissiveIntensity={1.2} />
+        </mesh>
+
+        {/* Skill name text */}
         <Text
-          fontSize={0.10}
+          fontSize={0.11}
           color={hovered ? "#000000" : "#ffffff"}
           anchorX="center"
           anchorY="middle"
           fontWeight="bold"
-          position={[0, 0, 0.01]}
+          position={[0.07, 0, 0.05]}
+          letterSpacing={0.03}
         >
           {name}
         </Text>
+
+        {/* HTML tooltip — expands smoothly on hover */}
+        <Html
+          distanceFactor={14}
+          center
+          position={[0, -0.55, 0]}
+          style={{ pointerEvents: 'none' }}
+          zIndexRange={[10, 0]}
+        >
+          <div
+            style={{
+              width: '160px',
+              overflow: 'hidden',
+              maxHeight: hovered ? '100px' : '0px',
+              opacity: hovered ? 1 : 0,
+              transform: hovered ? 'translateY(0px) scaleY(1)' : 'translateY(-8px) scaleY(0.85)',
+              transformOrigin: 'top center',
+              transition: 'max-height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease, transform 0.3s ease',
+            }}
+          >
+            <div
+              style={{
+                background: 'rgba(6, 6, 6, 0.92)',
+                border: `1px solid ${color}55`,
+                borderTop: `2px solid ${color}`,
+                borderRadius: '8px',
+                padding: '8px 12px',
+                boxShadow: `0 4px 24px ${color}22, 0 0 0 1px rgba(255,255,255,0.03)`,
+                backdropFilter: 'blur(8px)',
+                marginTop: '6px',
+              }}
+            >
+              {/* Icon + name row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px' }}>
+                <span style={{ fontSize: '13px' }}>{icon}</span>
+                <span style={{ color, fontSize: '11px', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  {name}
+                </span>
+              </div>
+              {/* Description */}
+              <p style={{
+                color: 'rgba(255,255,255,0.65)',
+                fontSize: '10px',
+                lineHeight: '1.5',
+                margin: 0,
+                fontFamily: 'system-ui, sans-serif',
+              }}>
+                {description}
+              </p>
+            </div>
+          </div>
+        </Html>
       </group>
     </Float>
   );
@@ -80,38 +210,26 @@ function AvatarModel(props) {
 
   useEffect(() => {
     scene.rotation.set(0, 0, 0);
-
-    // --- FINAL ARM POSES ---
     if (nodes.LeftArm) nodes.LeftArm.rotation.set(1.47, 0.56, 0.01);
     if (nodes.RightArm) nodes.RightArm.rotation.set(1.36, -0.42, -0.10);
 
-    // --- RELAX FINGERS (Removes statue hands) ---
     const fingers = ['Index', 'Middle', 'Ring', 'Pinky'];
-
-    // Left Hand curl
-    if (nodes.LeftHand) nodes.LeftHand.rotation.z = 0.1; // Turn palm slightly inward
+    if (nodes.LeftHand) nodes.LeftHand.rotation.z = 0.1;
     fingers.forEach(finger => {
-      if (nodes[`LeftHand${finger}1`]) nodes[`LeftHand${finger}1`].rotation.z = 0.3; // First knuckle
-      if (nodes[`LeftHand${finger}2`]) nodes[`LeftHand${finger}2`].rotation.z = 0.2; // Second knuckle
+      if (nodes[`LeftHand${finger}1`]) nodes[`LeftHand${finger}1`].rotation.z = 0.3;
+      if (nodes[`LeftHand${finger}2`]) nodes[`LeftHand${finger}2`].rotation.z = 0.2;
     });
     if (nodes.LeftHandThumb1) nodes.LeftHandThumb1.rotation.y = 0.2;
-
-    // Right Hand curl
-    if (nodes.RightHand) nodes.RightHand.rotation.z = -0.1; // Turn palm slightly inward
+    if (nodes.RightHand) nodes.RightHand.rotation.z = -0.1;
     fingers.forEach(finger => {
-      // Note: Right hand Z rotations are usually negative to mirror the left
       if (nodes[`RightHand${finger}1`]) nodes[`RightHand${finger}1`].rotation.z = -0.3;
       if (nodes[`RightHand${finger}2`]) nodes[`RightHand${finger}2`].rotation.z = -0.2;
     });
     if (nodes.RightHandThumb1) nodes.RightHandThumb1.rotation.y = -0.2;
-
   }, [nodes, scene]);
 
   useFrame((state, delta) => {
-    // Grab the total time the scene has been running (perfect for continuous loops)
     const t = state.clock.elapsedTime;
-
-    // --- 1. FULL BODY SWAY (Mouse Tracking) ---
     let targetBodyY = (state.pointer.x * Math.PI) / 10;
     let targetBodyX = -(state.pointer.y * Math.PI) / 20;
     targetBodyY = THREE.MathUtils.clamp(targetBodyY, -Math.PI / 6, Math.PI / 6);
@@ -119,7 +237,6 @@ function AvatarModel(props) {
     scene.rotation.y = THREE.MathUtils.lerp(scene.rotation.y, targetBodyY, 2 * delta);
     scene.rotation.x = THREE.MathUtils.lerp(scene.rotation.x, targetBodyX, 2 * delta);
 
-    // --- 2. HEAD TRACKING ---
     const head = nodes.Head || scene.getObjectByName('Head');
     if (head) {
       let targetHeadX = -(state.pointer.y * Math.PI) / 6;
@@ -130,39 +247,13 @@ function AvatarModel(props) {
       head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, targetHeadY, 5 * delta);
     }
 
-    // --- 3. PROCEDURAL IDLE ANIMATIONS (The "Alive" factor) ---
-
-    // Breathing: Very subtle rotation of the spine
     const spine = nodes.Spine || nodes.mixamorigSpine || scene.getObjectByName('Spine');
-    if (spine) {
-      // Breathes in and out every ~3 seconds
-      spine.rotation.x = Math.sin(t * 1.5) * 0.02;
-    }
+    if (spine) spine.rotation.x = Math.sin(t * 1.5) * 0.02;
 
-    // Arms: Base Leva values + a tiny sine wave drift
-    if (nodes.LeftArm) {
-      nodes.LeftArm.rotation.set(
-        1.47 + Math.sin(t * 1.2) * 0.02, // Subtle X drift
-        0.56,
-        0.01 + Math.sin(t * 0.8) * 0.03  // Subtle Z drift
-      );
-    }
-
-    if (nodes.RightArm) {
-      nodes.RightArm.rotation.set(
-        1.36 + Math.sin(t * 1.1) * 0.02, // Different speed (1.1) so they don't look robotic
-        -0.42,
-        -0.10 + Math.cos(t * 0.9) * 0.03 // Using cos instead of sin offsets the timing
-      );
-    }
-
-    // Hands/Wrists: Tiny finger-area micro-movements
-    if (nodes.LeftHand) {
-      nodes.LeftHand.rotation.z = Math.sin(t * 2) * 0.04;
-    }
-    if (nodes.RightHand) {
-      nodes.RightHand.rotation.z = Math.cos(t * 2.2) * 0.04;
-    }
+    if (nodes.LeftArm) nodes.LeftArm.rotation.set(1.47 + Math.sin(t * 1.2) * 0.02, 0.56, 0.01 + Math.sin(t * 0.8) * 0.03);
+    if (nodes.RightArm) nodes.RightArm.rotation.set(1.36 + Math.sin(t * 1.1) * 0.02, -0.42, -0.10 + Math.cos(t * 0.9) * 0.03);
+    if (nodes.LeftHand) nodes.LeftHand.rotation.z = Math.sin(t * 2) * 0.04;
+    if (nodes.RightHand) nodes.RightHand.rotation.z = Math.cos(t * 2.2) * 0.04;
   });
 
   return (
@@ -172,64 +263,107 @@ function AvatarModel(props) {
   );
 }
 
-
-
-// Add this right above your PortfolioScene function
 function CustomIsland(props) {
-  // IMPORTANT: Change 'my-island.glb' to the exact name of your file in the public folder!
   const { scene } = useGLTF('/my-island.glb');
-
   return <primitive object={scene} {...props} />;
 }
 
-// Preloading helps the 3D model load faster when the website boots up
 useGLTF.preload('/my-island.glb');
-
 useGLTF.preload('/model-2.glb');
 
 export default function PortfolioScene() {
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { rootMargin: '300px 0px' }
+    );
+    const el = sectionRef.current;
+    if (el) observer.observe(el);
+    return () => { if (el) observer.unobserve(el); };
+  }, []);
+
   return (
-    <section id="skills-scene" className="relative w-full overflow-hidden border-b border-neon-green/10" style={{ height: '100vh', background: 'transparent' }}>
-      <div className="absolute inset-0 bg-gradient-to-b from-deep-charcoal via-transparent to-deep-charcoal opacity-90 z-10 pointer-events-none" />
-      <div className="absolute inset-0 opacity-20 pointer-events-none z-0" style={{ backgroundImage: 'url(/bg-subtle-3d.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', mixBlendMode: 'luminosity' }}></div>
+    <section
+      id="skills-scene"
+      ref={sectionRef}
+      className="relative w-full overflow-hidden border-b border-neon-green/10"
+      style={{ height: '100vh', background: '#050505' }}
+    >
+      {/* New: Circuit board / neural web background image */}
+      <div
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{
+          backgroundImage: 'url(/portfolio-bg.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.55,
+          mixBlendMode: 'screen',
+        }}
+      />
 
-      <Canvas camera={{ position: [0, 0.5, 6], fov: 45 }} className="relative z-10 w-full h-full pt-10">
+      {/* Radial vignette — fades edges to black for depth */}
+      <div
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 70% 60% at 50% 50%, transparent 30%, #050505 100%)',
+        }}
+      />
 
-        {/* You might need to tweak these lights depending on how bright your new GLB is */}
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[2, 5, 5]} intensity={1.5} color="#ffffff" />
-        <pointLight position={[0, -0.8, 0]} intensity={5.0} distance={3} color="#00e5ff" />
+      {/* Top/bottom gradient fade to blend with surrounding sections */}
+      <div className="absolute inset-0 bg-gradient-to-b from-deep-charcoal via-transparent to-deep-charcoal opacity-85 z-10 pointer-events-none" />
 
-        <Suspense fallback={<Html center><div className="text-neon-green font-bold tracking-widest text-sm animate-pulse">LOADING 3D SCENE...</div></Html>}>
+      {/* Section label — top left */}
+      <div className="absolute top-8 left-8 z-20 pointer-events-none">
+        <p className="text-neon-green font-mono text-xs tracking-[0.25em] uppercase opacity-70">
+          // Tech Stack
+        </p>
+        <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-white mt-1">
+          Skills &amp; <span className="text-neon-green">Tools</span>
+        </h2>
+      </div>
 
+      {/* Hint text — bottom center */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+        <p className="text-white/25 text-xs font-mono tracking-widest uppercase">
+          Hover a skill for details
+        </p>
+      </div>
+
+      {/* 3D Canvas */}
+      <Canvas
+        camera={{ position: [0, 0.5, 6], fov: 45 }}
+        className="relative z-10 w-full h-full"
+        style={{ visibility: isVisible ? 'visible' : 'hidden' }}
+      >
+        <ambientLight intensity={0.4} />
+        <directionalLight position={[2, 5, 5]} intensity={1.2} color="#ffffff" />
+        {/* Neon underfoot glow */}
+        <pointLight position={[0, -0.8, 0]} intensity={4.0} distance={3} color="#39FF14" />
+        {/* Cool rim light */}
+        <pointLight position={[-4, 2, 2]} intensity={1.5} distance={8} color="#00e5ff" />
+
+        <Suspense fallback={<Html center><div className="text-neon-green font-bold tracking-widest text-sm animate-pulse">LOADING SCENE...</div></Html>}>
           <Float speed={1.5} rotationIntensity={0.05} floatIntensity={0.15}>
             <group position={[0, -0.5, 0]}>
-
-              {/* YOUR NEW CUSTOM ISLAND */}
-              {/* Y: -1.05 places the surface right beneath his shoes */}
               <CustomIsland position={[0, -2.8, 0]} scale={1} />
-
               <ContactShadows
-                position={[0, -1.0, 0]} // Keep this right at his feet! (His feet are at -1.0)
-                opacity={0.8}
+                position={[0, -1.0, 0]}
+                opacity={0.85}
                 scale={3}
-                blur={2}
+                blur={2.5}
                 far={1.5}
-                resolution={512}
+                resolution={256}
                 color="#000000"
               />
-
-              {/* THE CHARACTER */}
               <AvatarModel position={[0, -1, 0]} />
-
-              {/* THE SKILLS */}
               {SKILLS.map((skill, index) => (
-                <SkillNode key={index} name={skill.name} position={skill.position} />
+                <SkillNode key={index} skill={skill} />
               ))}
-
             </group>
           </Float>
-
           <Environment preset="night" />
         </Suspense>
       </Canvas>

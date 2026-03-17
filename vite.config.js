@@ -8,4 +8,19 @@ export default defineConfig({
     tailwindcss(),
     react()
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Isolate the largest dependencies into their own chunks
+          // so the main bundle stays small and they can be cached separately
+          'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
+          'motion-vendor': ['framer-motion'],
+          'gsap-vendor': ['gsap', '@gsap/react'],
+        }
+      }
+    },
+    // Default chunk size warning threshold
+    chunkSizeWarningLimit: 1000,
+  }
 })
