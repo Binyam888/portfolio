@@ -1,10 +1,12 @@
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { lazy, Suspense, useRef } from "react";
 import { Bike } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import styles from "./About.module.scss";
+
+const AvatarViewer = lazy(() => import("./AvatarViewer"));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -126,9 +128,9 @@ export default function About() {
   }, { scope: containerRef });
 
   const experiences = [
-    { role: "Senior Frontend Engineer", company: "Tech Innovators", duration: "2022 - Present" },
-    { role: "Creative Developer", company: "Design Studio X", duration: "2019 - 2022" },
-    { role: "Web Developer", company: "Digital Solutions", duration: "2017 - 2019" },
+    { role: "Web Developer", company: "Acode IT Solutiones", duration: "2025 - Present" },
+    { role: "Wordpress Developer", company: "Acode IT Solutiones", duration: "2024 - 2025" },
+    { role: "React Developer", company: "Freelancer", duration: "2022 - 2024" },
   ];
 
   return (
@@ -139,15 +141,15 @@ export default function About() {
 
       <div className={styles.container}>
         <motion.div
-           initial={{ opacity: 0, y: 50 }}
-           whileInView={{ opacity: 1, y: 0 }}
-           viewport={{ once: true }}
-           transition={{ duration: 0.8 }}
-           className={styles.heading}
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className={styles.heading}
         >
           <h3 className={styles.label}>// About Me</h3>
           <h2 className={styles.name}>
-            Mohammed <br/><span className={styles.nameFaded}>Binyamin</span>
+            Mohammed <br /><span className={styles.nameFaded}>Binyamin</span>
           </h2>
         </motion.div>
 
@@ -248,6 +250,11 @@ export default function About() {
           </div>
 
         </div>
+
+        {/* 3D Avatar Model — below the card */}
+        <Suspense fallback={<div style={{ width: '100%', height: '420px' }} />}>
+          <AvatarViewer />
+        </Suspense>
       </div>
     </section>
   );

@@ -6,6 +6,9 @@ export default defineConfig({
   plugins: [
     react()
   ],
+   server: {
+    allowedHosts: true,
+  },
   build: {
     rollupOptions: {
       output: {

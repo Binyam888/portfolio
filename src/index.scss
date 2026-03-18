@@ -67,13 +67,6 @@ button {
   color: inherit;
 }
 
-// GPU-composited sections for smooth scroll painting
-section {
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-
 // ── Custom Scrollbar ──
 ::-webkit-scrollbar {
   width: 8px;
