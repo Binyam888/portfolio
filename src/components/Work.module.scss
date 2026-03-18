@@ -1,0 +1,117 @@
+@use '../variables' as *;
+
+.section {
+  padding: 8rem 0;
+  background: $deep-charcoal;
+  position: relative;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+
+  @media (min-width: 768px) {
+    padding: 0 3rem;
+  }
+}
+
+.sectionHeader {
+  margin-bottom: 4rem;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+
+  @media (min-width: 768px) {
+    font-size: 4.5rem;
+  }
+}
+
+.titleAccent {
+  color: $neon-green;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  cursor: pointer;
+  aspect-ratio: 16/9;
+  background: $dark-gray;
+}
+
+.cardImage {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.7s;
+  opacity: 0.6;
+}
+
+.card:hover .cardImage {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.cardOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, $deep-charcoal, rgba($deep-charcoal, 0.4), transparent);
+  opacity: 0.8;
+  transition: opacity 0.5s;
+}
+
+.card:hover .cardOverlay {
+  opacity: 0.6;
+}
+
+.cardContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 2rem;
+  width: 100%;
+  transform: translateY(1rem);
+  transition: transform 0.5s;
+}
+
+.card:hover .cardContent {
+  transform: translateY(0);
+}
+
+.cardCategory {
+  color: $neon-green;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.5s 0.1s;
+}
+
+.card:hover .cardCategory {
+  opacity: 1;
+}
+
+.cardTitle {
+  font-size: 1.875rem;
+  font-weight: 900;
+  color: $pure-white;
+}

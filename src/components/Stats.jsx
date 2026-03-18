@@ -2,6 +2,7 @@ import { useRef, useState, useMemo, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Sphere, Html, Box, Torus, Octahedron, Dodecahedron, MeshDistortMaterial, Stars } from "@react-three/drei";
 import * as THREE from "three";
+import styles from "./Stats.module.scss";
 
 const statItems = [
   { label: "Years Experience", value: "1.5", suffix: "+", color: "#39FF14", distance: 3.5, speed: 0.4, size: 0.5, shape: "dodecahedron" },
@@ -40,11 +41,11 @@ function Planet({ item }) {
     if (!hovered) {
       angleRef.current += delta * item.speed;
     }
-    
+
     const x = Math.cos(angleRef.current) * item.distance;
     const z = Math.sin(angleRef.current) * item.distance;
     groupRef.current.position.set(x, 0, z);
-    
+
     if (meshRef.current) {
       meshRef.current.rotation.y += delta;
       meshRef.current.rotation.x += delta * 0.5;
@@ -78,22 +79,22 @@ function Planet({ item }) {
       <OrbitRing radius={item.distance} />
       <group ref={groupRef}>
         <group
-          onPointerOver={(e) => { 
-            e.stopPropagation(); 
-            setHovered(true); 
-            document.body.style.cursor = 'pointer'; 
+          onPointerOver={(e) => {
+            e.stopPropagation();
+            setHovered(true);
+            document.body.style.cursor = 'pointer';
           }}
-          onPointerOut={() => { 
-            setHovered(false); 
-            document.body.style.cursor = 'auto'; 
+          onPointerOut={() => {
+            setHovered(false);
+            document.body.style.cursor = 'auto';
           }}
         >
           {renderShape()}
         </group>
 
         <Html distanceFactor={15} center position={[0, item.size + 1.5, 0]}>
-          <div 
-            className="pointer-events-none transition-all duration-300"
+          <div
+            className={styles.tooltip}
             style={{
               background: 'rgba(10, 10, 10, 0.85)',
               border: `1px solid ${hovered ? item.color : 'rgba(255,255,255,0.1)'}`,
@@ -106,10 +107,10 @@ function Planet({ item }) {
               opacity: hovered ? 1 : 0.6
             }}
           >
-            <div className="text-2xl font-black mb-1" style={{ color: hovered ? item.color : 'white' }}>
+            <div className={styles.tooltipValue} style={{ color: hovered ? item.color : 'white' }}>
               {item.value}<span style={{ color: item.color }}>{item.suffix}</span>
             </div>
-            <div className="text-[10px] uppercase tracking-[0.15em] opacity-60 text-white font-medium whitespace-nowrap">
+            <div className={styles.tooltipLabel}>
               {item.label}
             </div>
           </div>
@@ -162,10 +163,10 @@ function ITParkGlobe() {
       </Sphere>
       {buildings.map((b, i) => (
         <Box key={i} args={[0.08, b.height, 0.08]} position={b.position} quaternion={b.quaternion}>
-          <meshStandardMaterial 
+          <meshStandardMaterial
             color="#222222"
-            emissive={b.isLit ? "#39FF14" : "#000000"} 
-            emissiveIntensity={b.isLit ? 1.5 : 0} 
+            emissive={b.isLit ? "#39FF14" : "#000000"}
+            emissiveIntensity={b.isLit ? 1.5 : 0}
             wireframe={b.isWire}
           />
         </Box>
@@ -178,7 +179,7 @@ function ITParkGlobe() {
 
 function GalaxyBackground() {
   const ref = useRef();
-  
+
   useFrame((state, delta) => {
     ref.current.rotation.y -= delta * 0.02;
     ref.current.rotation.x -= delta * 0.01;
@@ -186,7 +187,6 @@ function GalaxyBackground() {
 
   return (
     <group ref={ref}>
-      {/* Reduced from 5000 → 2000 stars: halves particle geometry with negligible visual difference */}
       <Stars radius={100} depth={50} count={2000} factor={4} saturation={0} fade speed={1} />
     </group>
   );
@@ -208,8 +208,6 @@ export default function Stats() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
 
-  // Toggle visibility (not mounting) so useFrame animations keep running
-  // and WebGL context is preserved — avoids expensive remounting
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => setIsVisible(entry.isIntersecting),
@@ -221,38 +219,36 @@ export default function Stats() {
   }, []);
 
   return (
-    <section id="stats" ref={sectionRef} className="py-32 bg-dark-gray relative z-10 border-t border-white/5 overflow-hidden">
-      <div className="container mx-auto px-6 md:px-12 relative z-20">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
-          <div className="max-w-xl">
-            <h3 className="text-neon-green font-bold tracking-widest uppercase mb-4 text-sm">
-              // Performance Data
-            </h3>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-tight text-white uppercase">
+    <section id="stats" ref={sectionRef} className={styles.section}>
+      <div className={styles.container}>
+        <div className={styles.headerRow}>
+          <div className={styles.headerLeft}>
+            <h3 className={styles.label}>// Performance Data</h3>
+            <h2 className={styles.title}>
               Driven by data.<br/>
-              <span className="text-white/50 uppercase">Designed for impact.</span>
+              <span className={styles.titleFaded}>Designed for impact.</span>
             </h2>
           </div>
-          
-          <p className="text-white/60 max-w-sm md:text-right">
+
+          <p className={styles.headerDesc}>
             Drag the solar system to explore the metrics. Hover over a planet to pause its orbit and view full details.
           </p>
         </div>
       </div>
 
       {/* 3D Canvas Area */}
-      <div className="w-full h-[600px] mt-[-20px] cursor-grab active:cursor-grabbing relative">
-        <div className="absolute inset-0 bg-neon-green/5 blur-[120px] rounded-full scale-150 pointer-events-none" />
-        
+      <div className={styles.canvasWrap}>
+        <div className={styles.canvasGlow} />
+
         <Canvas
           camera={{ position: [0, 8, 16], fov: 45 }}
           style={{ visibility: isVisible ? 'visible' : 'hidden' }}
         >
           <ambientLight intensity={0.2} />
-          
+
           <SolarSystem />
 
-          <OrbitControls 
+          <OrbitControls
             enablePan={false}
             enableZoom={false}
             autoRotate

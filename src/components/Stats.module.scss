@@ -1,0 +1,120 @@
+@use '../variables' as *;
+
+.section {
+  padding: 8rem 0;
+  background: $dark-gray;
+  position: relative;
+  z-index: 10;
+  border-top: 1px solid rgba($pure-white, 0.05);
+  overflow: hidden;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 20;
+
+  @media (min-width: 768px) {
+    padding: 0 3rem;
+  }
+}
+
+.headerRow {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 4rem;
+  gap: 2rem;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+}
+
+.headerLeft {
+  max-width: 36rem;
+}
+
+.label {
+  color: $neon-green;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+  color: $pure-white;
+  text-transform: uppercase;
+
+  @media (min-width: 768px) {
+    font-size: 3rem;
+  }
+}
+
+.titleFaded {
+  color: rgba($pure-white, 0.5);
+  text-transform: uppercase;
+}
+
+.headerDesc {
+  color: rgba($pure-white, 0.6);
+  max-width: 24rem;
+
+  @media (min-width: 768px) {
+    text-align: right;
+  }
+}
+
+.canvasWrap {
+  width: 100%;
+  height: 600px;
+  margin-top: -20px;
+  cursor: grab;
+  position: relative;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.canvasGlow {
+  position: absolute;
+  inset: 0;
+  background: rgba($neon-green, 0.05);
+  filter: blur(120px);
+  border-radius: 9999px;
+  transform: scale(1.5);
+  pointer-events: none;
+}
+
+// Html tooltip styles used inside the 3D canvas
+.tooltip {
+  pointer-events: none;
+  transition: all 0.3s;
+}
+
+.tooltipValue {
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin-bottom: 0.25rem;
+}
+
+.tooltipLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  opacity: 0.6;
+  color: $pure-white;
+  font-weight: 500;
+  white-space: nowrap;
+}

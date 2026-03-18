@@ -1,0 +1,127 @@
+@use '../variables' as *;
+
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 50;
+  transition: all 0.3s ease;
+  padding: 1.5rem 0;
+  background: transparent;
+
+  &.scrolled {
+    padding: 1rem 0;
+    background: rgba($deep-charcoal, 0.8);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.headerInner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  @media (min-width: 768px) {
+    padding: 0 3rem;
+  }
+}
+
+.logoWrap {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.logoLink {
+  cursor: pointer;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  transition: color 0.3s;
+
+  &:hover {
+    color: $neon-green;
+  }
+}
+
+.logoDot {
+  color: $neon-green;
+}
+
+.nav {
+  display: none;
+  gap: 2rem;
+  align-items: center;
+  background: rgba($pure-white, 0.05);
+  border-radius: 9999px;
+  padding: 0.75rem 2rem;
+  border: 1px solid rgba($pure-white, 0.1);
+  backdrop-filter: blur(12px);
+  justify-content: center;
+
+  @media (min-width: 768px) {
+    display: flex;
+  }
+}
+
+.navLink {
+  cursor: pointer;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba($pure-white, 0.7);
+  transition: color 0.3s;
+
+  &:hover {
+    color: $pure-white;
+  }
+}
+
+.navLinkInner {
+  padding: 0 0.5rem;
+}
+
+.ctaWrap {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ctaButton {
+  display: none;
+  padding: 0.75rem 1.5rem;
+  background: $neon-green;
+  color: $deep-charcoal;
+  font-weight: 700;
+  border-radius: 9999px;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background: $pure-white;
+  }
+
+  @media (min-width: 768px) {
+    display: block;
+  }
+}
+
+.mobileToggle {
+  display: block;
+  color: $pure-white;
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}

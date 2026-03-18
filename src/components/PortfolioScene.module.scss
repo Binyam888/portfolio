@@ -1,0 +1,106 @@
+@use '../variables' as *;
+
+.section {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  height: 100vh;
+  background: #050505;
+  border-bottom: 1px solid rgba($neon-green, 0.1);
+}
+
+.bgImage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.55;
+  mix-blend-mode: screen;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 70% 60% at 50% 50%, transparent 30%, #050505 100%);
+}
+
+.gradientFade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, $deep-charcoal, transparent, $deep-charcoal);
+  opacity: 0.85;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.sectionLabel {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.labelTag {
+  color: $neon-green;
+  font-family: monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
+  color: $pure-white;
+  margin-top: 0.25rem;
+
+  @media (min-width: 768px) {
+    font-size: 1.875rem;
+  }
+}
+
+.titleAccent {
+  color: $neon-green;
+}
+
+.hintText {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  pointer-events: none;
+  color: rgba($pure-white, 0.25);
+  font-size: 0.75rem;
+  font-family: monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.canvas {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+}
+
+.loadingText {
+  color: $neon-green;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  font-size: 0.875rem;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

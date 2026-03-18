@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
+import styles from "./MagneticButton.module.scss";
 
 export default function MagneticButton({ children, className = "", onClick }) {
   const ref = useRef(null);
@@ -24,7 +25,7 @@ export default function MagneticButton({ children, className = "", onClick }) {
       onMouseLeave={reset}
       animate={{ x: position.x, y: position.y }}
       transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
-      className={`relative rounded-full font-medium ${className}`}
+      className={`${styles.magneticButton} ${className}`}
       onClick={onClick}
     >
       {children}

@@ -1,12 +1,13 @@
 import React, { useRef } from "react";
-import { 
-  motion, 
-  useMotionValue, 
-  useSpring, 
-  useTransform, 
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
   useMotionTemplate,
   useScroll
 } from "framer-motion";
+import styles from "./LandoHoverFace.module.scss";
 
 const LandoHoverFace = ({ faceSrc, helmetSrc }) => {
   const ref = useRef(null);
@@ -18,9 +19,9 @@ const LandoHoverFace = ({ faceSrc, helmetSrc }) => {
     offset: ["start start", "end end"]
   });
 
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, 300]); 
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, 150]); 
-  const y3 = useTransform(scrollYProgress, [0, 1], [0, -150]); 
+  const y1 = useTransform(scrollYProgress, [0, 1], [0, 300]);
+  const y2 = useTransform(scrollYProgress, [0, 1], [0, 150]);
+  const y3 = useTransform(scrollYProgress, [0, 1], [0, -150]);
   const scaleFaceRaw = useTransform(scrollYProgress, [0, 0.8], [1, 2.5]);
 
   const springConfig = { damping: 25, stiffness: 100, mass: 0.5, restDelta: 0.0001 };
@@ -35,7 +36,7 @@ const LandoHoverFace = ({ faceSrc, helmetSrc }) => {
   const tiltY = useMotionValue(0);
   const tiltXSpring = useSpring(tiltX, { stiffness: 100, damping: 30 });
   const tiltYSpring = useSpring(tiltY, { stiffness: 100, damping: 30 });
-  
+
   const rotateX = useTransform(tiltYSpring, [-0.5, 0.5], ["15deg", "-15deg"]);
   const rotateY = useTransform(tiltXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
 
@@ -75,17 +76,17 @@ const LandoHoverFace = ({ faceSrc, helmetSrc }) => {
   const maskImage = useMotionTemplate`radial-gradient(${smoothRadius}px circle at ${maskX}px ${maskY}px, black 50%, transparent 100%)`;
 
   return (
-    <section 
-      ref={containerRef} 
+    <section
+      ref={containerRef}
       id="hero"
-      className="relative h-[250svh] bg-black w-full"
+      className={styles.heroSection}
     >
-      <div className="sticky top-0 h-[100svh] w-full flex items-center justify-center overflow-hidden">
-      
+      <div className={styles.stickyContainer}>
+
       {/* 1. Background Text */}
-      <motion.h1 
+      <motion.h1
         style={{ y: smoothY1, willChange: "transform" }}
-        className="absolute text-[15vw] font-black text-[#1a1a1a] uppercase select-none z-0 tracking-tighter"
+        className={styles.bgText}
       >
         BINYAM
       </motion.h1>
@@ -104,10 +105,10 @@ const LandoHoverFace = ({ faceSrc, helmetSrc }) => {
           transformStyle: "preserve-3d",
           willChange: "transform",
         }}
-        className="relative w-[300px] md:w-[450px] aspect-[3/4] z-10 cursor-crosshair"
+        className={styles.tiltContainer}
       >
         {/* Pulsing Neon Glow */}
-        <div className="absolute inset-0 bg-[#3fff3f]/15 blur-[100px] rounded-full scale-125 z-0 pointer-events-none" />
+        <div className={styles.neonGlow} />
 
         {/* Layer 1: Base Image — LCP element, load eagerly */}
         <img
@@ -116,13 +117,13 @@ const LandoHoverFace = ({ faceSrc, helmetSrc }) => {
           loading="eager"
           fetchPriority="high"
           decoding="async"
-          className="relative absolute inset-0 w-full h-full object-cover z-10"
+          className={styles.faceImage}
           style={{ transform: "translateZ(30px)" }}
         />
 
         {/* Layer 2: Reveal Image (Helmet) */}
         <motion.div
-          className="absolute inset-0 w-full h-full z-20 pointer-events-none"
+          className={styles.revealLayer}
           style={{
             WebkitMaskImage: maskImage,
             maskImage: maskImage,
@@ -135,24 +136,24 @@ const LandoHoverFace = ({ faceSrc, helmetSrc }) => {
             aria-hidden="true"
             loading="eager"
             decoding="async"
-            className="absolute inset-0 w-full h-full object-cover"
+            className={styles.revealImage}
           />
         </motion.div>
       </motion.div>
 
       {/* 3. Foreground Text */}
-      <motion.div 
-        style={{ y: smoothY3, willChange: "transform" }} 
-        className="absolute inset-0 flex flex-col items-center justify-center text-center z-30 pointer-events-none mt-[8vh]"
+      <motion.div
+        style={{ y: smoothY3, willChange: "transform" }}
+        className={styles.foregroundText}
       >
-        <h2 className="text-[7vw] font-black text-white leading-[0.85] uppercase tracking-tighter drop-shadow-xl">
+        <h2 className={styles.headingText}>
           CREATIVE<br />DEVELOPER
         </h2>
-        <p className="mt-8 text-sm font-mono text-[#3fff3f] uppercase tracking-widest opacity-70">
+        <p className={styles.scrollHint}>
           Scroll to explore
         </p>
       </motion.div>
-      
+
       </div>
     </section>
   );

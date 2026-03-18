@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import styles from "./Work.module.scss";
 
 const projects = [
   {
@@ -29,21 +30,21 @@ const projects = [
 
 export default function Work() {
   return (
-    <section id="work" className="py-32 bg-deep-charcoal relative">
-      <div className="container mx-auto px-6 md:px-12">
+    <section id="work" className={styles.section}>
+      <div className={styles.container}>
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="mb-16"
+          className={styles.sectionHeader}
         >
-          <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">
-            Selected <span className="text-neon-green">Work</span>
+          <h2 className={styles.title}>
+            Selected <span className={styles.titleAccent}>Work</span>
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className={styles.grid}>
           {projects.map((project, index) => (
             <motion.div
               key={project.id}
@@ -51,24 +52,24 @@ export default function Work() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: index * 0.1 }}
-              className="group relative overflow-hidden rounded-2xl cursor-pointer aspect-video bg-dark-gray"
+              className={styles.card}
             >
               {/* Image with zoom effect */}
-              <div 
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100"
+              <div
+                className={styles.cardImage}
                 style={{ backgroundImage: `url(${project.image})` }}
                 aria-label={project.title}
               />
-              
+
               {/* Overlay gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-deep-charcoal via-deep-charcoal/40 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-500" />
+              <div className={styles.cardOverlay} />
 
               {/* Text content sliding up on hover */}
-              <div className="absolute bottom-0 left-0 p-8 w-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                <span className="text-neon-green text-sm font-bold tracking-widest uppercase mb-2 block opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+              <div className={styles.cardContent}>
+                <span className={styles.cardCategory}>
                   {project.category}
                 </span>
-                <h3 className="text-3xl font-black text-white">{project.title}</h3>
+                <h3 className={styles.cardTitle}>{project.title}</h3>
               </div>
             </motion.div>
           ))}

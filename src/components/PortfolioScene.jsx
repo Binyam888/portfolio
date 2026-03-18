@@ -2,6 +2,7 @@ import React, { useState, Suspense, useEffect, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, Environment, Html, Float, Text, ContactShadows, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
+import styles from './PortfolioScene.module.scss';
 
 const SKILLS = [
   {
@@ -263,12 +264,6 @@ function AvatarModel(props) {
   );
 }
 
-function CustomIsland(props) {
-  const { scene } = useGLTF('/my-island.glb');
-  return <primitive object={scene} {...props} />;
-}
-
-useGLTF.preload('/my-island.glb');
 useGLTF.preload('/model-2.glb');
 
 export default function PortfolioScene() {
@@ -289,53 +284,37 @@ export default function PortfolioScene() {
     <section
       id="skills-scene"
       ref={sectionRef}
-      className="relative w-full overflow-hidden border-b border-neon-green/10"
-      style={{ height: '100vh', background: '#050505' }}
+      className={styles.section}
     >
-      {/* New: Circuit board / neural web background image */}
+      {/* Background image */}
       <div
-        className="absolute inset-0 z-0 pointer-events-none"
-        style={{
-          backgroundImage: 'url(/portfolio-bg.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          opacity: 0.55,
-          mixBlendMode: 'screen',
-        }}
+        className={styles.bgImage}
+        style={{ backgroundImage: 'url(/portfolio-bg.png)' }}
       />
 
-      {/* Radial vignette — fades edges to black for depth */}
-      <div
-        className="absolute inset-0 z-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse 70% 60% at 50% 50%, transparent 30%, #050505 100%)',
-        }}
-      />
+      {/* Radial vignette */}
+      <div className={styles.vignette} />
 
-      {/* Top/bottom gradient fade to blend with surrounding sections */}
-      <div className="absolute inset-0 bg-gradient-to-b from-deep-charcoal via-transparent to-deep-charcoal opacity-85 z-10 pointer-events-none" />
+      {/* Top/bottom gradient fade */}
+      <div className={styles.gradientFade} />
 
       {/* Section label — top left */}
-      <div className="absolute top-8 left-8 z-20 pointer-events-none">
-        <p className="text-neon-green font-mono text-xs tracking-[0.25em] uppercase opacity-70">
-          // Tech Stack
-        </p>
-        <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-white mt-1">
-          Skills &amp; <span className="text-neon-green">Tools</span>
+      <div className={styles.sectionLabel}>
+        <p className={styles.labelTag}>// Tech Stack</p>
+        <h2 className={styles.sectionTitle}>
+          Skills &amp; <span className={styles.titleAccent}>Tools</span>
         </h2>
       </div>
 
       {/* Hint text — bottom center */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
-        <p className="text-white/25 text-xs font-mono tracking-widest uppercase">
-          Hover a skill for details
-        </p>
+      <div className={styles.hintText}>
+        <p>Hover a skill for details</p>
       </div>
 
       {/* 3D Canvas */}
       <Canvas
         camera={{ position: [0, 0.5, 6], fov: 45 }}
-        className="relative z-10 w-full h-full"
+        className={styles.canvas}
         style={{ visibility: isVisible ? 'visible' : 'hidden' }}
       >
         <ambientLight intensity={0.4} />
@@ -345,10 +324,9 @@ export default function PortfolioScene() {
         {/* Cool rim light */}
         <pointLight position={[-4, 2, 2]} intensity={1.5} distance={8} color="#00e5ff" />
 
-        <Suspense fallback={<Html center><div className="text-neon-green font-bold tracking-widest text-sm animate-pulse">LOADING SCENE...</div></Html>}>
+        <Suspense fallback={<Html center><div className={styles.loadingText}>LOADING SCENE...</div></Html>}>
           <Float speed={1.5} rotationIntensity={0.05} floatIntensity={0.15}>
             <group position={[0, -0.5, 0]}>
-              <CustomIsland position={[0, -2.8, 0]} scale={1} />
               <ContactShadows
                 position={[0, -1.0, 0]}
                 opacity={0.85}

@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useRef } from "react";
+import styles from "./App.module.scss";
 
 import Navbar from "./components/Navbar";
 import LandoHoverFace from "./components/LandoHoverFace";
@@ -35,12 +36,9 @@ function App() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-noise bg-deep-charcoal selection:bg-neon-green selection:text-deep-charcoal">
+    <div className={styles.app}>
       {/* Cursor gradient — updated via direct DOM mutation, no React state */}
-      <div
-        ref={cursorRef}
-        className="pointer-events-none fixed inset-0 z-50 transition-opacity duration-300"
-      />
+      <div ref={cursorRef} className={styles.cursorGradient} />
 
       <Navbar />
 
@@ -52,11 +50,11 @@ function App() {
         <About />
 
         {/* 3D scenes are code-split and lazy-loaded */}
-        <Suspense fallback={<div className="w-full h-screen bg-deep-charcoal" />}>
+        <Suspense fallback={<div className={styles.lazyFallback} />}>
           <PortfolioScene />
         </Suspense>
 
-        <Suspense fallback={<div className="w-full h-[700px] bg-dark-gray" />}>
+        <Suspense fallback={<div className={styles.lazyFallbackSmall} />}>
           <Stats />
         </Suspense>
 
