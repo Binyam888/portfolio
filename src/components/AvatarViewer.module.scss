@@ -1,0 +1,53 @@
+@use '../variables' as *;
+
+.viewerContainer {
+  width: 100%;
+  max-width: 700px;
+  height: 800px;
+  margin-top: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 50;
+}
+
+.canvas {
+  background: transparent;
+}
+
+.fallbackContainer {
+  width: 100%;
+  max-width: 700px;
+  height: 600px;
+  margin: 2rem auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba($pure-white, 0.02);
+  border-radius: 1rem;
+  border: 1px solid rgba($pure-white, 0.05);
+  color: rgba($pure-white, 0.5);
+  font-size: 0.875rem;
+}
+
+.fallbackContent {
+  text-align: center;
+}
+
+.fallbackTitle {
+  margin-bottom: 0.5rem;
+}
+
+.retryButton {
+  padding: 0.5rem 1rem;
+  background: rgba($neon-green, 0.1);
+  color: $neon-green;
+  border: 1px solid $neon-green;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  
+  &:hover {
+    background: rgba($neon-green, 0.2);
+  }
+}

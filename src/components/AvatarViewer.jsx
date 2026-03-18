@@ -3,6 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { Suspense } from 'react';
+import styles from './AvatarViewer.module.scss';
 
 function AvatarModel() {
   const { nodes, scene } = useGLTF('/model-2.glb');
@@ -61,17 +62,12 @@ export default function AvatarViewer() {
 
   if (contextLost) {
     return (
-      <div style={{
-        width: '100%', maxWidth: '700px', height: '600px',
-        margin: '2rem auto 0', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'rgba(255,255,255,0.02)', borderRadius: '1rem', border: '1px solid rgba(255,255,255,0.05)',
-        color: 'rgba(255,255,255,0.5)', fontSize: '0.875rem'
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ marginBottom: '0.5rem' }}>3D Model Unavailable</p>
+      <div className={styles.fallbackContainer}>
+        <div className={styles.fallbackContent}>
+          <p className={styles.fallbackTitle}>3D Model Unavailable</p>
           <button
             onClick={() => setContextLost(false)}
-            style={{ padding: '0.5rem 1rem', background: 'rgba(57, 255, 20, 0.1)', color: '#39FF14', border: '1px solid #39FF14', borderRadius: '4px', cursor: 'pointer' }}
+            className={styles.retryButton}
           >
             Retry Loading
           </button>
@@ -81,16 +77,7 @@ export default function AvatarViewer() {
   }
 
   return (
-    <div style={{
-      width: '100%',
-      maxWidth: '700px',
-      height: '800px',
-      marginTop: '2rem',
-      marginLeft: 'auto',
-      marginRight: 'auto',
-      position: 'relative',
-      zIndex: 50,
-    }}>
+    <div className={styles.viewerContainer}>
       <Canvas
         camera={{ position: [0, 1, 2.8], fov: 55 }}
         gl={{
@@ -108,7 +95,7 @@ export default function AvatarViewer() {
           scene.background = null;
           gl.toneMapping = THREE.NoToneMapping;
         }}
-        style={{ background: 'transparent' }}
+        className={styles.canvas}
       >
         <ambientLight intensity={0.8} />
         <directionalLight position={[2, 4, 4]} intensity={1.0} />
